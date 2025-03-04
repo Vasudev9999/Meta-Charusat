@@ -5,15 +5,24 @@ const AvatarPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [username, setUsername] = useState("");
 
-  // Load username from localStorage on mount
+  // On mount, check for username in URL query or localStorage
   useEffect(() => {
-    const storedUsername = localStorage.getItem("username");
-    if (storedUsername) {
-      setUsername(storedUsername);
+    const params = new URLSearchParams(window.location.search);
+    const urlUsername = params.get("username");
+    if (urlUsername) {
+      // Update localStorage and state
+      localStorage.setItem("username", urlUsername);
+      setUsername(urlUsername);
+      // Clear the query parameter from URL (refresh browser history)
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else {
+      const storedUsername = localStorage.getItem("username");
+      if (storedUsername) setUsername(storedUsername);
     }
   }, []);
 
   const handleAuth = (name) => {
+    localStorage.setItem("username", name);
     setUsername(name);
   };
 

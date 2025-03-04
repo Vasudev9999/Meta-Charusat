@@ -11,11 +11,13 @@ export const login = async (req, res) => {
     if (!user)
       return res.status(400).json({ message: "Invalid credentials" });
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch)
-      return res.status(400).json({ message: "Invalid credentials" });
-
-    // Use JWT_SECRET from environment or fallback to a default value.
+    // For non-Google users, verify password
+    if (user.authType !== "google") {
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch)
+        return res.status(400).json({ message: "Invalid credentials" });
+    }
+    
     const secret = process.env.JWT_SECRET || "default_jwt_secret";
     const token = jwt.sign({ id: user._id }, secret, { expiresIn: "1h" });
     res.json({
