@@ -1,11 +1,12 @@
 import express from "express";
-import { register, login } from "../controllers/authController.js";
+import { register, login, updateAvatarAndPlayerName } from "../controllers/authController.js";
 import passport from "passport";
 
 const router = express.Router();
 
 router.post("/register", register);
 router.post("/login", login);
+router.put("/avatar", updateAvatarAndPlayerName);  // Updated endpoint
 
 // Initiate Google Login
 router.get(
@@ -13,13 +14,18 @@ router.get(
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
-// Handle callback from Google
+// Example Google callback in backend (routes/auth.js):
 router.get(
   "/google/callback",
   passport.authenticate("google", { failureRedirect: "/login" }),
   (req, res) => {
-    // On successful auth, redirect to frontend (adjust URL and protocol as needed)
-    res.redirect(`http://localhost:5173/avatar?username=${req.user.username}`);
+    req.user.email = req.user.email || req.user.emails?.[0]?.value;
+    if (!req.user.playerName) {
+      req.user.playerName = req.user.username;
+    }
+    res.redirect(
+      `http://localhost:5173/avatar?email=${req.user.email}&username=${req.user.username}&playerName=${req.user.playerName}&avatarID=${req.user.avatarID}`
+    );
   }
 );
 

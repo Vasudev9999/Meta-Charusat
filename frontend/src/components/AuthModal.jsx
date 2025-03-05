@@ -1,23 +1,39 @@
 import React, { useState } from "react";
-import { registerUser, loginUser } from "../api/authApi";
+import { loginUser, registerUser } from "../api/authApi";
 import "./AuthModal.css";
 
 function LoginCard({ onAuth, onClose, setMessage }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await loginUser({ email, password });
-      const userName = res.data.user.username;
-      localStorage.setItem("username", userName);
-      onAuth(userName);
-      onClose();
-    } catch (error) {
-      setMessage(error.response?.data?.message || "Login error");
-    }
-  };
+  // Inside LoginCard:
+const handleLogin = async (e) => {
+  e.preventDefault();
+  try {
+    const res = await loginUser({ email, password });
+    const user = res.data.user; // full user object including email, playerName, avatarID
+    localStorage.setItem("user", JSON.stringify(user));
+    onAuth(user);
+    onClose();
+  } catch (error) {
+    setMessage(error.response?.data?.message || "Login error");
+  }
+};
+
+// Similarly, in SignUpCard, store full user.
+  // const handleLogin = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     const res = await loginUser({ email, password });
+  //     // Full user object returned
+  //     const user = res.data.user;
+  //     localStorage.setItem("user", JSON.stringify(user));
+  //     onAuth(user); // Pass full user object to AuthContext
+  //     onClose();
+  //   } catch (error) {
+  //     setMessage(error.response?.data?.message || "Login error");
+  //   }
+  // };
 
   return (
     <div className="card">
@@ -81,13 +97,11 @@ function SignUpCard({ onAuth, onClose, setMessage }) {
       return;
     }
     try {
-      const res = await registerUser({
-        username: name,
-        email,
-        password
-      });
-      localStorage.setItem("username", name);
-      onAuth(name);
+      const res = await registerUser({ username: name, email, password });
+      // Assume backend returns user data (if not, you may need to login immediately)
+      const user = res.data.user || { username: name, email };
+      localStorage.setItem("user", JSON.stringify(user));
+      onAuth(user);
       onClose();
     } catch (error) {
       setMessage(error.response?.data?.message || "Signup error");
@@ -167,7 +181,7 @@ function SignUpCard({ onAuth, onClose, setMessage }) {
 }
 
 export default function AuthModal({ onClose, onAuth }) {
-  const [mode, setMode] = useState("login"); // "login" or "signup"
+  const [mode, setMode] = useState("login");
   const [message, setMessage] = useState("");
 
   return (

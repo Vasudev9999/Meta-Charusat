@@ -3,14 +3,15 @@ import { createContext, useState, useEffect } from "react";
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-
+  // On every app load, clear any persisted session.
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) setUser(JSON.parse(storedUser));
+    localStorage.removeItem("user");
   }, []);
 
+  const [user, setUser] = useState(null);
+
   const login = (userData) => {
+    // We store the user temporarily (and clear it on reload)
     localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
   };
