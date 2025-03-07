@@ -1,57 +1,57 @@
 .avatar-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
-  
-  .avatar-modal-container {
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    width: 400px;
-    text-align: center;
-  }
-  
-  .avatar-modal-container input[type="text"] {
-    width: 80%;
-    padding: 6px;
-    margin: 10px 0;
-  }
-  
-  .avatar-options {
-    display: flex;
-    justify-content: space-around;
-    margin: 20px 0;
-  }
-  
-  .avatar-option {
-    cursor: pointer;
-    border: 2px solid transparent;
-    padding: 10px;
-    border-radius: 8px;
-    transition: border-color 0.3s;
-  }
-  
-  .avatar-option.selected {
-    border-color: #0073e6;
-  }
-  
-  .avatar-shape {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    margin: 0 auto;
-  }
-  
-  .avatar-modal-buttons button {
-    padding: 8px 16px;
-    margin: 0 10px;
-    cursor: pointer;
-  }
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.avatar-modal-container {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  text-align: center;
+}
+
+.avatar-modal-container input[type="text"] {
+  width: 80%;
+  padding: 6px;
+  margin: 10px 0;
+}
+
+.avatar-options {
+  display: flex;
+  justify-content: space-around;
+  margin: 20px 0;
+}
+
+.avatar-option {
+  cursor: pointer;
+  border: 2px solid transparent;
+  padding: 10px;
+  border-radius: 8px;
+  transition: border-color 0.3s;
+}
+
+.avatar-option.selected {
+  border-color: #0073e6;
+}
+
+.avatar-shape {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin: 0 auto;
+}
+
+.avatar-modal-buttons button {
+  padding: 8px 16px;
+  margin: 0 10px;
+  cursor: pointer;
+}

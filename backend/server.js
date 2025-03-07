@@ -8,40 +8,143 @@ import path from "path";
 import passport from "./config/passport.js";
 import { connectDB } from "./config/db.js";
 import authRoutes from "./routes/auth.js";
+import { Server } from "socket.io";
 
-// Load env variables
 dotenv.config();
 
-const app = express();
+// ---------------------------
+// Auth Server (Login, etc.)
+// ---------------------------
+const authApp = express();
 
 // Connect to MongoDB
 connectDB();
 
-// Middlewares
-app.use(cors());
-app.use(express.json());
-app.use(
+authApp.use(cors());
+authApp.use(express.json());
+authApp.use(
   session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false
   })
 );
-app.use(passport.initialize());
-app.use(passport.session());
+authApp.use(passport.initialize());
+authApp.use(passport.session());
+authApp.use("/api/auth", authRoutes);
 
-// Routes
-app.use("/api/auth", authRoutes);
-
-// HTTPS options using certificate keys from /backend/cert
-const PORT = process.env.PORT || 5000;
+const PORT_AUTH = process.env.PORT || 5000;
 const certPath = path.join(process.cwd(), "cert", "server.cert");
 const keyPath = path.join(process.cwd(), "cert", "server.key");
-const options = {
+const httpsOptions = {
   key: fs.readFileSync(keyPath),
   cert: fs.readFileSync(certPath)
 };
 
-https.createServer(options, app).listen(PORT, () =>
-  console.log(`HTTPS server running on https://localhost:${PORT}`)
+https.createServer(httpsOptions, authApp).listen(PORT_AUTH, () =>
+  console.log(`Auth HTTPS server running on https://localhost:${PORT_AUTH}`)
 );
+
+// ---------------------------
+// Campus Socket Server
+// ---------------------------
+const campusApp = express();
+campusApp.use(cors());
+campusApp.use(express.json());
+
+// Test route (optional)
+campusApp.get("/", (req, res) => {
+  res.send("Campus socket server running");
+});
+
+const PORT_CAMPUS = 7000;
+const campusServer = https.createServer(httpsOptions, campusApp);
+
+// Allow both http and https origins as needed
+const allowedOrigins = ["http://localhost:5173", "https://localhost:5173"];
+
+const io = new Server(campusServer, {
+  cors: {
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+    credentials: true
+  }
+});
+
+// Global players object keyed by a unique user identifier (such as email)
+const players = {};
+
+io.on("connection", (socket) => {
+  console.log(
+    `[${new Date().toISOString()}] Campus client connected: socket.id ${socket.id} on port ${PORT_CAMPUS}`
+  );
+
+  socket.on("join", (data) => {
+    console.log(
+      `[${new Date().toISOString()}] Received join from ${data.userId} on socket ${socket.id}`
+    );
+    // data: { userId, playerName, avatarID }
+    players[data.userId] = {
+      ...data,
+      socketId: socket.id,
+      position: { x: 50, y: 50 },
+      speaking: false
+    };
+    io.emit("updatePlayers", players);
+    console.log(
+      `[${new Date().toISOString()}] Players: ${JSON.stringify(players)}`
+    );
+  });
+
+  socket.on("move", (data) => {
+    if (players[data.userId]) {
+      players[data.userId].position = data.position;
+      io.emit("updatePlayers", players);
+      console.log(
+        `[${new Date().toISOString()}] ${data.userId} moved to (${data.position.x}, ${data.position.y})`
+      );
+    }
+  });
+
+  socket.on("speaking", (data) => {
+    if (players[data.userId]) {
+      players[data.userId].speaking = data.speaking;
+      io.emit("updatePlayers", players);
+      console.log(
+        `[${new Date().toISOString()}] ${data.userId} speaking: ${data.speaking}`
+      );
+    }
+  });
+
+  socket.on("leave", (data) => {
+    if (players[data.userId]) {
+      console.log(
+        `[${new Date().toISOString()}] ${data.userId} left campus from socket ${socket.id}`
+      );
+      delete players[data.userId];
+      io.emit("updatePlayers", players);
+    }
+  });
+
+  socket.on("disconnect", () => {
+    console.log(
+      `[${new Date().toISOString()}] Campus client disconnected: socket.id ${socket.id} on port ${PORT_CAMPUS}`
+    );
+    for (const userId in players) {
+      if (players[userId].socketId === socket.id) {
+        console.log(
+          `[${new Date().toISOString()}] Removing user ${userId} due to disconnect`
+        );
+        delete players[userId];
+        break;
+      }
+    }
+    io.emit("updatePlayers", players);
+  });
+});
+
+campusServer.listen(PORT_CAMPUS, () => {
+  console.log(
+    `Campus HTTPS socket server running on https://localhost:${PORT_CAMPUS}`
+  );
+});
