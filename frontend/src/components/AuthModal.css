@@ -1,0 +1,347 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&display=swap');
+
+:root {
+  --bg-color: #f4f3ee;
+  --text-color: #191919;
+  --accent-color: #FF5D5D;
+  --secondary-color: #5DB9FF;
+  --tertiary-color: #FFB15D;
+  --neutral-light: #e0e0e0;
+  --neutral-dark: #555555;
+  --shadow: 6px 6px 0px rgba(0, 0, 0, 0.2);
+  --border-radius: 0px;
+  --border-width: 2px;
+}
+
+.auth-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.modal-container {
+  position: relative;
+  width: 90%;
+  max-width: 550px;
+  background-color: var(--bg-color);
+  border: var(--border-width) solid var(--text-color);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.modal-bg-shape {
+  position: absolute;
+  opacity: 0.07;
+  z-index: 0;
+}
+
+.shape-1 {
+  width: 300px;
+  height: 300px;
+  top: -100px;
+  left: -100px;
+}
+
+.shape-2 {
+  width: 300px;
+  height: 300px;
+  bottom: -100px;
+  right: -100px;
+}
+
+.modal-content {
+  position: relative;
+  z-index: 1;
+  padding: 30px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modal-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 2rem;
+  letter-spacing: -1px;
+  margin: 0;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: var(--text-color);
+}
+
+.tab-controls {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: var(--border-width) solid var(--text-color);
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 12px;
+  background: none;
+  border: none;
+  border-right: var(--border-width) solid var(--text-color);
+  font-size: 1rem;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.tab-btn:last-child {
+  border-right: none;
+}
+
+.tab-btn.active {
+  background-color: var(--text-color);
+  color: var(--bg-color);
+}
+
+.alert {
+  padding: 15px;
+  margin-bottom: 20px;
+  background-color: var(--accent-color);
+  color: white;
+  border: var(--border-width) solid var(--text-color);
+  font-weight: 500;
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Card styles */
+.auth-card {
+  background-color: white;
+  padding: 0;
+  border: var(--border-width) solid var(--text-color);
+}
+
+.card-header {
+  padding: 20px;
+  border-bottom: var(--border-width) solid var(--text-color);
+}
+
+.card-header h2 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.header-line {
+  width: 50px;
+  height: 3px;
+  background-color: var(--accent-color);
+  margin: 10px 0;
+}
+
+.card-content {
+  padding: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"] {
+  width: 100%;
+  padding: 12px;
+  border: var(--border-width) solid var(--text-color);
+  background-color: var(--bg-color);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1rem;
+  transition: all 0.3s;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="email"]:focus,
+.form-group input[type="password"]:focus {
+  outline: none;
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.1);
+}
+
+.form-group.terms {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.checkbox-wrapper {
+  position: relative;
+  width: 20px;
+  height: 20px;
+}
+
+.form-group input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  cursor: pointer;
+}
+
+.custom-checkbox {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: var(--border-width) solid var(--text-color);
+  background-color: var(--bg-color);
+  transition: all 0.3s;
+}
+
+input[type="checkbox"]:checked + .custom-checkbox {
+  background-color: var(--accent-color);
+}
+
+input[type="checkbox"]:checked + .custom-checkbox::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 14px;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.btn {
+  padding: 12px 24px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border: var(--border-width) solid var(--text-color);
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.1);
+  text-transform: uppercase;
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: var(--text-color);
+}
+
+.btn-outline:hover {
+  background-color: var(--neutral-light);
+}
+
+.btn-primary {
+  background-color: var(--text-color);
+  color: var(--bg-color);
+}
+
+.btn-primary:hover {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.1);
+}
+
+.btn-full {
+  display: block;
+  width: 100%;
+  background-color: var(--text-color);
+  color: var(--bg-color);
+  text-align: center;
+}
+
+.btn-full:hover {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.1);
+}
+
+.extra-controls {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.google-link {
+  text-decoration: none;
+  width: 100%;
+}
+
+.btn-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  background-color: white;
+  color: var(--text-color);
+  border: var(--border-width) solid var(--text-color);
+  padding: 12px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.1);
+}
+
+.btn-google:hover {
+  background-color: #f1f1f1;
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.1);
+}
+
+.google-icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .modal-content {
+    padding: 20px;
+  }
+  
+  .card-footer {
+    flex-direction: column;
+  }
+  
+  .btn {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .tab-btn {
+    padding: 10px;
+  }
+}
