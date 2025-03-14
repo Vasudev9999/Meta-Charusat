@@ -12,11 +12,13 @@
   "dependencies": {
     "axios": "^1.8.1",
     "framer-motion": "^12.4.10",
+    "phaser": "^3.88.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.2.0",
     "simple-peer": "^9.11.1",
     "socket.io-client": "^4.8.1",
+    "tmx-parser": "^1.5.0",
     "vite-plugin-node-polyfills": "^0.23.0",
     "webrtc-adapter": "^9.0.1"
   },

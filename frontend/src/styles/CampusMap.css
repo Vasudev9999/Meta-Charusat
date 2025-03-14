@@ -1,208 +1,300 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&display=swap');
-
-:root {
-  --primary-color: #FF5D5D;
-  --secondary-color: #5DB9FF;
-  --tertiary-color: #5DFF8F;
-  --accent-color: #FFB15D;
-  --quinary-color: #C45DFF;
-  --dark-color: #191919;
-  --light-color: #f5f5f5;
-  --bg-color: #f4f3ee;
-  --shadow: 4px 4px 0px rgba(0, 0, 0, 0.2);
-  --border-width: 2px;
-}
-
-.campus-map-container {
+/* Base styles */
+.campus-container {
   position: relative;
-  width: 100%;
+  width: 100vw;
   height: 100vh;
   overflow: hidden;
-  font-family: 'Space Grotesk', sans-serif;
-  background-color: var(--bg-color);
+  background-color: #121212;
+  font-family: 'Inter', sans-serif;
 }
 
-/* TiledMap component styling */
-.tiled-map {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-/* Ensure our map is positioned at the center */
-.tiled-map-inner {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-/* Overlay for players */
-.overlay {
+#game-container {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  pointer-events: none;
+  z-index: 1;
+}
+
+/* Loading overlay */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.9);
   z-index: 10;
 }
 
-/* Player styling */
-.player-container {
-  position: absolute;
+.loading-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  transform: translate(-50%, -100%);
-  z-index: 20;
+  gap: 20px;
 }
 
-.player-container.current-player {
-  z-index: 30; /* Keep current player on top */
-}
-
-.player-name {
-  padding: 4px 10px;
-  background-color: white;
-  border: var(--border-width) solid var(--dark-color);
-  border-radius: 20px;
-  font-weight: 700;
-  font-size: 12px;
-  white-space: nowrap;
-  margin-bottom: 5px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  box-shadow: var(--shadow);
-}
-
-.player {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: var(--border-width) solid var(--dark-color);
-  box-shadow: var(--shadow);
+.campus-logo {
   position: relative;
+  width: 80px;
+  height: 80px;
+  margin-bottom: 10px;
 }
 
-/* Speaking indicator */
-.speaking-indicator {
-  width: 8px;
+.campus-logo-box {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  top: 15px;
+  left: 15px;
+  animation: rotate 3s infinite linear;
+}
+
+.campus-logo-circle {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  top: 10px;
+  left: 10px;
+  animation: pulse 2s infinite ease-in-out;
+}
+
+.loading-content h1 {
+  font-size: 24px;
+  color: white;
+  letter-spacing: 2px;
+  font-weight: 600;
+}
+
+.loading-progress-bar {
+  width: 300px;
   height: 8px;
-  border-radius: 50%;
-  background-color: var(--tertiary-color);
-  display: inline-block;
-  animation: pulse 1s infinite alternate;
-}
-
-@keyframes pulse {
-  0% { transform: scale(0.8); opacity: 0.7; }
-  100% { transform: scale(1.2); opacity: 1; }
-}
-
-/* UI elements */
-.ui-container {
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px;
-  z-index: 20;
-}
-
-.instructions {
-  background-color: white;
-  border: var(--border-width) solid var(--dark-color);
-  padding: 10px 20px;
-  font-size: 14px;
-  font-weight: 500;
-  box-shadow: var(--shadow);
-}
-
-.controls {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  background-color: white;
-  border: var(--border-width) solid var(--dark-color);
-  padding: 10px 20px;
-  box-shadow: var(--shadow);
-}
-
-.mic-toggle-button {
-  background-color: white;
-  border: var(--border-width) solid var(--dark-color);
-  padding: 8px 16px;
-  font-family: 'Syne', sans-serif;
-  font-weight: 700;
-  cursor: pointer;
-  position: relative;
-  transition: transform 0.2s;
-}
-
-.mic-toggle-button::before {
-  content: '';
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  width: 100%;
-  height: 100%;
-  background-color: var(--secondary-color);
-  z-index: -1;
-  transition: all 0.2s;
-}
-
-.mic-toggle-button:hover {
-  transform: translate(2px, 2px);
-}
-
-.mic-toggle-button:hover::before {
-  top: 0;
-  left: 0;
-}
-
-.mic-toggle-button.active {
-  background-color: var(--tertiary-color);
-}
-
-.mic-toggle-button.active::before {
-  background-color: var(--accent-color);
-}
-
-/* Mic indicator meter */
-.mic-indicator {
-  width: 120px;
-  height: 16px;
-  background-color: rgba(255, 255, 255, 0.5);
-  border: var(--border-width) solid var(--dark-color);
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
   overflow: hidden;
 }
 
-.mic-meter {
+.loading-progress-fill {
   height: 100%;
-  background-color: var(--tertiary-color);
-  width: 0%;
-  transition: width 0.1s ease;
+  background: linear-gradient(90deg, #5DB9FF, #5DFF8F);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.loading-percentage {
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+}
+
+/* Error message */
+.error-message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(255, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  border: 1px solid #ff0000;
+  padding: 20px;
+  border-radius: 8px;
+  color: white;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  text-align: center;
+}
+
+.error-message button {
+  background-color: #ff3333;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.error-message button:hover {
+  background-color: #ff5555;
+}
+
+/* UI Components */
+.campus-ui {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.campus-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  color: white;
+  position: relative;
+}
+
+.campus-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: auto;
+}
+
+.campus-brand-icon {
+  position: relative;
+  width: 24px;
+  height: 24px;
+}
+
+.campus-brand-square {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background-color: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  top: 4px;
+  left: 4px;
+}
+
+.campus-brand-circle {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  top: 3px;
+  left: 3px;
+}
+
+.campus-brand-name {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* Controls display */
+.campus-controls {
+  display: flex;
+  gap: 15px;
+}
+
+.control-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: auto;
+}
+
+.control-key {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.control-desc {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+/* Status section */
+.campus-status {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.status-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.status-indicator.online {
+  background-color: #4CAF50;
+  box-shadow: 0 0 6px #4CAF50;
+}
+
+.leave-campus-btn {
+  background-color: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  pointer-events: auto;
+}
+
+.leave-campus-btn:hover {
+  background-color: rgba(255, 255, 255, 0.25);
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .ui-container {
-    width: 90%;
+  .campus-controls {
+    display: none;
   }
   
-  .controls {
-    flex-direction: column;
-    padding: 15px;
-    width: 100%;
+  .campus-header {
+    padding: 10px;
   }
   
-  .mic-indicator {
-    width: 100%;
+  .campus-brand-name {
+    font-size: 14px;
   }
 }
