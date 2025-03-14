@@ -145,7 +145,10 @@ const setupSocketEvents = (socketIo) => {
       }
       socketIo.emit("updatePlayers", players);
     });
-
+    socket.on("requestPlayers", () => {
+      // Send the current players list back to the requesting client
+      socket.emit("updatePlayers", players);
+    });
     socket.on("error", (error) => {
       console.error(`[${new Date().toISOString()}] Socket error on ${socket.id}:`, error);
     });

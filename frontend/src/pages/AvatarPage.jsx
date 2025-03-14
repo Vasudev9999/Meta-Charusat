@@ -26,7 +26,7 @@ const getAvatarInfo = (avatarID) => {
 
 const AvatarPage = () => {
   // Context and navigation
-  const { user, login } = useContext(AuthContext);
+  const { user, login, updateUser } = useContext(AuthContext);
   const navigate = useNavigate();
   
   // State management
@@ -48,11 +48,13 @@ const AvatarPage = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [isAvatarSaving, setIsAvatarSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState({ text: "", type: "" });
+  const [needsRefresh, setNeedsRefresh] = useState(false);
   
   // Refs
   const canvasRef = useRef(null);
   const confettiRef = useRef(null);
   const nameInputRef = useRef(null);
+  const pageRefreshTimeoutRef = useRef(null);
   
   // Handle mouse movement
   useEffect(() => {
@@ -70,6 +72,9 @@ const AvatarPage = () => {
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       clearTimeout(timer);
+      if (pageRefreshTimeoutRef.current) {
+        clearTimeout(pageRefreshTimeoutRef.current);
+      }
     };
   }, []);
 
@@ -119,6 +124,19 @@ const AvatarPage = () => {
       window.removeEventListener('resize', handleResize);
     };
   }, [isLoaded]);
+  
+  // Handle page refresh when avatar changes
+  useEffect(() => {
+    if (needsRefresh) {
+      // Force a page refresh after a short delay to ensure the new avatar is saved
+      const refreshTimeout = setTimeout(() => {
+        window.location.reload();
+      }, 100);
+      
+      pageRefreshTimeoutRef.current = refreshTimeout;
+      return () => clearTimeout(refreshTimeout);
+    }
+  }, [needsRefresh]);
   
   // Confetti effect
   useEffect(() => {
@@ -278,10 +296,13 @@ const AvatarPage = () => {
       });
       
       setPlayerName(res.data.user.playerName);
-      localStorage.setItem(
-        "user", 
-        JSON.stringify({ ...user, playerName: res.data.user.playerName, avatarID })
-      );
+      
+      // Update localStorage and context
+      const updatedUser = { ...user, playerName: res.data.user.playerName, avatarID };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      if (typeof updateUser === 'function') {
+        updateUser(updatedUser);
+      }
       
       setIsEditing(false);
       setSaveMessage({
@@ -300,6 +321,9 @@ const AvatarPage = () => {
   };
 
   const handleAvatarSelect = async (newAvatarID) => {
+    // Don't do anything if it's the same avatar
+    if (avatarID === newAvatarID) return;
+    
     setAvatarID(newAvatarID);
     
     if (!user) {
@@ -326,25 +350,27 @@ const AvatarPage = () => {
         avatarID: newAvatarID
       });
       
-      localStorage.setItem(
-        "user", 
-        JSON.stringify({ ...user, avatarID: newAvatarID })
-      );
+      // Update localStorage and context
+      const updatedUser = { ...user, avatarID: newAvatarID };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      if (typeof updateUser === 'function') {
+        updateUser(updatedUser);
+      }
       
       setSaveMessage({
         text: "Avatar updated successfully!",
         type: "success"
       });
       
-      // Short confetti burst for successful avatar change
-      setTimeout(() => setConfettiActive(true), 100);
+      // Trigger page refresh
+      setNeedsRefresh(true);
+      
     } catch (error) {
       console.error("Error updating avatar:", error);
       setSaveMessage({
         text: "Failed to update avatar. Please try again.",
         type: "error"
       });
-    } finally {
       setIsAvatarSaving(false);
     }
   };
@@ -582,7 +608,7 @@ const AvatarPage = () => {
                       
                       <button 
                         className="btn-action btn-enter"
-                        onClick={() => navigate("/campus")}
+                        onClick={() => navigate("/campus", { state: { fromAvatarUpdate: true } })}
                         onMouseEnter={() => handleMouseEnter('enter', 'Start your virtual experience')}
                         onMouseLeave={handleMouseLeave}
                       >
